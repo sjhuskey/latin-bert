@@ -4,40 +4,44 @@ Latin BERT is a contextual language model for the Latin language, described in m
 
 David Bamman and Patrick J. Burns (2020), [Latin BERT: A Contextual Language Model for Classical Philology](https://arxiv.org/abs/2009.10053), ArXiv.
 
-### Install
+## Install
 
 *Tested on Python 3.10.13 \[Feb. 24 2024\].*
 
-1.) Create a [conda environment](https://www.anaconda.com/download/) (optional):
+1.) Clone this repository:
 
 ```sh
-conda create --name latinbert python=3
+git clone git@github.com:dbamman/latin-bert.git
+```
+
+2.) Create a [conda environment](https://www.anaconda.com/download/) (optional):
+
+```sh
+conda create --name latinbert python=3.10
 conda activate latinbert
 ```
 
-2.) Install PyTorch according to your own system requirements (GPU vs. CPU, CUDA version): [https://pytorch.org](https://pytorch.org).
+3.) Install PyTorch according to your own system requirements (GPU vs. CPU, CUDA version): [https://pytorch.org](https://pytorch.org).
 
-
-3.) Install the remaining libraries:
-
+4.) Install the remaining libraries:
 
 ```sh
 pip install -r requirements.txt
 ```
 
-4.) Install Latin tokenizer models:
+5.) Install Latin tokenizer models:
 
 ```sh
 python3 -c "from cltk.data.fetch import FetchCorpus; corpus_downloader = FetchCorpus(language='lat');corpus_downloader.import_corpus('lat_models_cltk')"
 ```
 
-5.) Download pre-trained BERT model for Latin:
+6.) Download pre-trained BERT model for Latin:
 
 ```sh
 ./scripts/download.sh
 ```
 
-### Minimal example
+## Minimal example
 
 For a minimal example of how to generate BERT representations for an input sentence, execute the following:
 
@@ -47,10 +51,9 @@ python3 scripts/gen_berts.py --bertPath models/latin_bert/ --tokenizerPath model
 
 This generates BERT representations for two sentences and saves their output with one (token, 768-dimensional final BERT representation) tuple per line.  For examples of how to fine-tune Latin BERT for a specific task, see the case studies on POS tagging and WSD.
 
-### Data
+## Data
 
 Latin BERT is pre-trained using data from the following sources.
-
 
 |Source|Tokens|
 |---|---:|
@@ -64,15 +67,13 @@ Latin BERT is pre-trained using data from the following sources.
 
 Texts from Perseus and the Latin Library are drawn from the corpora in the [Classical Language Toolkit](http://cltk.org).  Texts are tokenized for sentences and words using Latin-specific tokenizers in CLTK.  We learn a Latin-specific WordPiece tokenizer using [tensor2tensor](https://github.com/tensorflow/tensor2tensor/blob/master/tensor2tensor/data_generators/text_encoder_build_subword.py) from this training data.
 
-
 Since the texts from the Internet Archive (IA) are the product of noisy OCR, we uniformly upsample all non-IA texts to train on a balance of approximately 50% IA texts and 50% non-IA texts.
 
-### Training
+## Training
 
 We pre-train Latin BERT using [tensorflow](https://github.com/google-research/bert) on a TPU for 1M steps. Training took approximately 5 days on a TPU v2, and cost ~$540 on Google Cloud (at $4.50 per TPU v2 hour).  We set the maximum sequence length to 256 WordPiece tokens.
 
 We convert the resulting tensorflow checkpoint into a BERT model that can used by the HuggingFace library using the [transformers-cli](https://github.com/huggingface/transformers/blob/master/transformers-cli) library.  The model in `model/latin_bert` can be used with the HuggingFace transformers library.
-
 
 ## Case studies
 
@@ -142,8 +143,8 @@ BERT representations are contextual embeddings, so the same word type (e.g., *in
 |0.817|eam distinxit <span style="color:#FF00FF">in</span> partes quatuor.|Erasmus, *Ep.* |
 |0.812|hereditas plerumque dividitur <span style="color:#FF00FF">in</span> duodecim uncias, quae assis appellatione continentur.|Justinian, *Inst.*|
 
-
 The most similar tokens not only capture the specific morphological constraints of this sense of *in* appearing with a noun in the accusative case (denoting *into* rather than *within*) but also broadly capture the more specific subsense of division *into* parts.
 
 ### Notes
+
 With thanks to Todd Cook, Luis Antonio Vasquez Reina, LuigiOnFire for their contributions.
